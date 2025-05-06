@@ -24,7 +24,6 @@ import {
   Paper,
 } from "@mui/material";
 
-// Mock exchange rates
 const COMMON_CURRENCIES = [
   "USD",
   "EUR",
@@ -68,13 +67,12 @@ export default function Calculator() {
     }, 1000);
   }, []);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: selectedCurrency,
       maximumFractionDigits: 2,
     }).format(value);
-  };
 
   const calculateEMI = () => {
     const P = parseFloat(loanAmount);
@@ -126,148 +124,180 @@ export default function Calculator() {
   };
 
   return (
-    <Box sx={{ mt: 4, px: { xs: 2, md: 5 }, width: "100%" }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            label="Loan Amount"
-            type="number"
-            fullWidth
-            value={loanAmount}
-            onChange={(e) => setLoanAmount(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            label="Interest Rate (%)"
-            type="number"
-            fullWidth
-            value={interestRate}
-            onChange={(e) => setInterestRate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            inputProps={{ step: "0.1" }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            label="Term (Years)"
-            type="number"
-            fullWidth
-            value={loanTerm}
-            onChange={(e) => setLoanTerm(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
-      </Grid>
-
-      <Box sx={{ mt: 3, mb: 5, textAlign: "center" }}>
-        <Button variant="contained" color="primary" onClick={calculateEMI}>
-          CALCULATE
-        </Button>
-      </Box>
-
-      {result && (
-        <Box sx={{ mt: 4 }}>
-          <Grid container spacing={3} sx={{ mb: 5 }}>
-            {[
-              ["Monthly EMI", result.emi],
-              ["Total Payment", result.totalPayment],
-              ["Total Interest", result.totalInterest],
-            ].map(([label, value], index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card>
-                  <CardContent>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      gutterBottom
-                    >
-                      {label}
-                    </Typography>
-                    <Typography variant="h5" fontWeight="bold">
-                      {formatCurrency(value)}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+    <Box
+      sx={{
+        mt: 4,
+        px: { xs: 2, md: 5 },
+        display: "flex",
+        justifyContent: "center",
+        width: "100%",
+      }}
+    >
+      <Box sx={{ width: "100%", maxWidth: "1200px" }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              label="Loan Amount"
+              type="number"
+              fullWidth
+              value={loanAmount}
+              onChange={(e) => setLoanAmount(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
           </Grid>
-
-          <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Currency</InputLabel>
-                <Select
-                  value={selectedCurrency}
-                  label="Currency"
-                  onChange={handleCurrencyChange}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <MenuItem value="USD" disabled>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <CircularProgress size={16} sx={{ mr: 1 }} />
-                        Loading...
-                      </Box>
-                    </MenuItem>
-                  ) : (
-                    COMMON_CURRENCIES.map((code) => (
-                      <MenuItem key={code} value={code}>
-                        {code}
-                      </MenuItem>
-                    ))
-                  )}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              sx={{ textAlign: { xs: "left", sm: "right" } }}
-            >
-              <Button variant="outlined" color="secondary" onClick={resetTable}>
-                RESET TABLE
-              </Button>
-            </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              label="Interest Rate (%)"
+              type="number"
+              fullWidth
+              value={interestRate}
+              onChange={(e) => setInterestRate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              inputProps={{ step: "0.1" }}
+            />
           </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              label="Term (Years)"
+              type="number"
+              fullWidth
+              value={loanTerm}
+              onChange={(e) => setLoanTerm(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+        </Grid>
 
-          {error && (
-            <Alert severity="warning" sx={{ mb: 3 }}>
-              {error}
-            </Alert>
-          )}
-
-          <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
-            Amortization Schedule
-          </Typography>
-          <TableContainer component={Paper} sx={{ mb: 4 }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Month</TableCell>
-                  <TableCell>Payment</TableCell>
-                  <TableCell>Principal</TableCell>
-                  <TableCell>Interest</TableCell>
-                  <TableCell>Balance</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {result.amortizationSchedule.map((row) => (
-                  <TableRow key={row.month}>
-                    <TableCell>{row.month}</TableCell>
-                    <TableCell>{formatCurrency(row.payment)}</TableCell>
-                    <TableCell>{formatCurrency(row.principal)}</TableCell>
-                    <TableCell>{formatCurrency(row.interest)}</TableCell>
-                    <TableCell>{formatCurrency(row.balance)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+        <Box sx={{ mt: 3, mb: 5, display: "flex", justifyContent: "center" }}>
+          <Button variant="contained" color="primary" onClick={calculateEMI}>
+            CALCULATE
+          </Button>
         </Box>
-      )}
+
+        {result && (
+          <Box sx={{ mt: 4 }}>
+            <Grid container spacing={3} sx={{ mb: 5 }}>
+              {[
+                ["Monthly EMI", result.emi],
+                ["Total Payment", result.totalPayment],
+                ["Total Interest", result.totalInterest],
+              ].map(([label, value], index) => (
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Card>
+                    <CardContent>
+                      <Typography
+                        variant="subtitle1"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        {label}
+                      </Typography>
+                      <Typography variant="h5" fontWeight="bold">
+                        {formatCurrency(value)}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ mb: 3 }}
+            >
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Currency</InputLabel>
+                  <Select
+                    value={selectedCurrency}
+                    label="Currency"
+                    onChange={handleCurrencyChange}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <MenuItem value="USD" disabled>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <CircularProgress size={16} sx={{ mr: 1 }} />
+                          Loading...
+                        </Box>
+                      </MenuItem>
+                    ) : (
+                      COMMON_CURRENCIES.map((code) => (
+                        <MenuItem key={code} value={code}>
+                          {code}
+                        </MenuItem>
+                      ))
+                    )}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                sx={{
+                  display: "flex",
+                  justifyContent: { xs: "flex-start", sm: "flex-end" },
+                  mt: { xs: 2, sm: 0 },
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={resetTable}
+                >
+                  RESET TABLE
+                </Button>
+              </Grid>
+            </Grid>
+
+            {error && (
+              <Alert severity="warning" sx={{ mb: 3 }}>
+                {error}
+              </Alert>
+            )}
+
+            <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+              Amortization Schedule
+            </Typography>
+
+            <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+              <TableContainer
+                component={Paper}
+                sx={{
+                  minWidth: 600,
+                  maxWidth: "900px",
+                  width: "100%",
+                }}
+              >
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Month</TableCell>
+                      <TableCell>Principal</TableCell>
+                      <TableCell>Interest</TableCell>
+                      <TableCell>Remaining Balance</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {result.amortizationSchedule.map((row) => (
+                      <TableRow key={row.month}>
+                        <TableCell>{row.month}</TableCell>
+                        <TableCell>{formatCurrency(row.principal)}</TableCell>
+                        <TableCell>{formatCurrency(row.interest)}</TableCell>
+                        <TableCell>{formatCurrency(row.balance)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 }
